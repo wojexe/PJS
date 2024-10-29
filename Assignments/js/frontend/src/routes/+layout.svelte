@@ -1,11 +1,11 @@
 <script lang="ts">
-	import ModeToggle from '$lib/components/ui/ModeToggle.svelte';
-import '../app.css';
+import ModeToggle from "$lib/components/ui/ModeToggle.svelte";
+import "../app.css";
 
-	import { ModeWatcher } from "mode-watcher";
+import { ModeWatcher } from "mode-watcher";
 
-	let { children } = $props();
- </script>
+const { children } = $props();
+</script>
 
  <ModeWatcher />
 <ModeToggle />
