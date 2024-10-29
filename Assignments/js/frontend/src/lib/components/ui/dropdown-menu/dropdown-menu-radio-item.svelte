@@ -1,12 +1,10 @@
 <script lang="ts">
 import { cn } from "$lib/utils.js";
-import type {
-	DropdownMenu as DropdownMenuPrimitive,
-	WithoutChild,
-} from "bits-ui";
+import type { WithoutChild } from "bits-ui";
+import { DropdownMenu as DropdownMenuPrimitive } from "bits-ui";
 import Circle from "lucide-svelte/icons/circle";
 
-const {
+let {
 	ref = $bindable(null),
 	class: className,
 	children: childrenProp,

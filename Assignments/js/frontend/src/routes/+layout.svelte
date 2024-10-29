@@ -7,6 +7,6 @@ import { ModeWatcher } from "mode-watcher";
 const { children } = $props();
 </script>
 
- <ModeWatcher />
+<ModeWatcher />
 <ModeToggle />
- {@render children()}
+{@render children()}
