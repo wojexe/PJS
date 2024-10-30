@@ -9,6 +9,10 @@ import {
 const email = "wojciech@sierotowicz.com";
 </script>
 
+<svelte:head>
+  <title>contact @ wojexe's shop</title>
+</svelte:head>
+
 <main class="contents">
   <Card class="self-center min-w-64">
     <CardHeader>

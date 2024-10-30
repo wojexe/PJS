@@ -7,7 +7,7 @@ const signedIn = false;
 </script>
 
 <nav
-  class="sticky inset-x-0 top-0 z-50 w-full h-14 px-4 grid grid-cols-3 place-items-center bg-white/80 dark:bg-neutral-950/80 backdrop-blur border"
+  class="sticky inset-x-0 top-0 z-50 w-full h-14 px-4 grid grid-cols-3 place-items-center bg-white/80 dark:bg-neutral-950/80 backdrop-blur border-b"
 >
   <a href="/" class="justify-self-start flex">
     <Store class="h-6 w-6" />
