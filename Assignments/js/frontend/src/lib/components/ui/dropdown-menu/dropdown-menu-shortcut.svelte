@@ -4,10 +4,10 @@ import type { WithElementRef } from "bits-ui";
 import type { HTMLAttributes } from "svelte/elements";
 
 let {
-	ref = $bindable(null),
-	class: className,
-	children,
-	...restProps
+  ref = $bindable(null),
+  class: className,
+  children,
+  ...restProps
 }: WithElementRef<HTMLAttributes<HTMLSpanElement>> = $props();
 </script>
 

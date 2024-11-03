@@ -6,11 +6,11 @@ import Check from "lucide-svelte/icons/check";
 import Minus from "lucide-svelte/icons/minus";
 
 let {
-	ref = $bindable(null),
-	checked = $bindable(false),
-	class: className,
-	children: childrenProp,
-	...restProps
+  ref = $bindable(null),
+  checked = $bindable(false),
+  class: className,
+  children: childrenProp,
+  ...restProps
 }: WithoutChild<DropdownMenuPrimitive.CheckboxItemProps> = $props();
 </script>
 

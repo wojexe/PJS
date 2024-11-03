@@ -1,7 +1,9 @@
 <script lang="ts">
 import { Button, buttonVariants } from "$lib/components/ui/button";
+import * as Dialog from "$lib/components/ui/dialog";
 import { cn } from "$lib/utils";
-import { Store, ShoppingCart } from "lucide-svelte";
+
+import { ShoppingCart, Store } from "lucide-svelte";
 
 const signedIn = false;
 </script>
@@ -31,10 +33,29 @@ const signedIn = false;
 
   <div class="justify-self-end flex gap-4">
     {#if signedIn === false}
-      <!-- TODO: sign in -->
-      <Button variant="outline" size="sm">Sign in</Button>
-      <!-- TODO: sign up -->
-      <Button size="sm">Sign up</Button>
+      <Dialog.Root>
+        <Dialog.Trigger>
+          <Button variant="outline" size="sm">Sign in</Button>
+        </Dialog.Trigger>
+        <Dialog.Content>
+          <Dialog.Header>
+            <Dialog.Title>Sign in</Dialog.Title>
+          </Dialog.Header>
+          <!-- TODO: Sign in form content -->
+        </Dialog.Content>
+      </Dialog.Root>
+
+      <Dialog.Root>
+        <Dialog.Trigger>
+          <Button size="sm">Sign up</Button>
+        </Dialog.Trigger>
+        <Dialog.Content>
+          <Dialog.Header>
+            <Dialog.Title>Sign up</Dialog.Title>
+          </Dialog.Header>
+          <!-- TODO: Sign up form content -->
+        </Dialog.Content>
+      </Dialog.Root>
     {:else}
       <!-- TODO: cart handling -->
       <a

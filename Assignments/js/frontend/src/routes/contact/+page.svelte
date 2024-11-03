@@ -1,9 +1,9 @@
 <script lang="ts">
 import {
-	Card,
-	CardHeader,
-	CardTitle,
-	CardContent,
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
 } from "$lib/components/ui/card";
 
 const email = "wojciech@sierotowicz.com";

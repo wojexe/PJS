@@ -4,13 +4,13 @@ import { DropdownMenu as DropdownMenuPrimitive } from "bits-ui";
 import ChevronRight from "lucide-svelte/icons/chevron-right";
 
 let {
-	ref = $bindable(null),
-	class: className,
-	inset,
-	children,
-	...restProps
+  ref = $bindable(null),
+  class: className,
+  inset,
+  children,
+  ...restProps
 }: DropdownMenuPrimitive.SubTriggerProps & {
-	inset?: boolean;
+  inset?: boolean;
 } = $props();
 </script>
 

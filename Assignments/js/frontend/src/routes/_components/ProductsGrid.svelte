@@ -2,21 +2,21 @@
 import { Badge } from "$lib/components/ui/badge";
 import { Button } from "$lib/components/ui/button";
 import {
-	Card,
-	CardHeader,
-	CardTitle,
-	CardDescription,
-	CardContent,
-	CardFooter,
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
 } from "$lib/components/ui/card";
 
 interface Props {
-	products: Array<{
-		name: string;
-		description: string;
-		categories: Array<string>;
-	}>;
-	[key: string]: unknown;
+  products: Array<{
+    name: string;
+    description: string;
+    categories: Array<string>;
+  }>;
+  [key: string]: unknown;
 }
 
 let { products }: Props = $props();
@@ -39,7 +39,7 @@ let { products }: Props = $props();
       <CardContent class="h-full">{product.description}</CardContent>
       <CardFooter>
         <!-- TODO: handle orders -->
-        <Button class="flex w-full">Order</Button>
+        <Button class="flex w-full">Add to cart</Button>
       </CardFooter>
     </Card>
   {/each}

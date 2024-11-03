@@ -3,8 +3,8 @@ import "../app.css";
 
 import { ModeWatcher } from "mode-watcher";
 
-import { NavigationBar } from "$lib/components/ui/navigation-bar";
 import { Footer } from "$lib/components/ui/footer";
+import { NavigationBar } from "$lib/components/ui/navigation-bar";
 
 const { children } = $props();
 </script>

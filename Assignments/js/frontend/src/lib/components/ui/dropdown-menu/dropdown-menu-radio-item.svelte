@@ -5,10 +5,10 @@ import { DropdownMenu as DropdownMenuPrimitive } from "bits-ui";
 import Circle from "lucide-svelte/icons/circle";
 
 let {
-	ref = $bindable(null),
-	class: className,
-	children: childrenProp,
-	...restProps
+  ref = $bindable(null),
+  class: className,
+  children: childrenProp,
+  ...restProps
 }: WithoutChild<DropdownMenuPrimitive.RadioItemProps> = $props();
 </script>
 
