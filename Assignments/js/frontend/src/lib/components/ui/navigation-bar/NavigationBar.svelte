@@ -1,6 +1,8 @@
 <script lang="ts">
+import { SignIn } from "$lib/components/forms/signIn";
 import { Button, buttonVariants } from "$lib/components/ui/button";
 import * as Dialog from "$lib/components/ui/dialog";
+
 import { cn } from "$lib/utils";
 
 import { ShoppingCart, Store } from "lucide-svelte";
@@ -41,7 +43,7 @@ const signedIn = false;
           <Dialog.Header>
             <Dialog.Title>Sign in</Dialog.Title>
           </Dialog.Header>
-          <!-- TODO: Sign in form content -->
+          <SignIn />
         </Dialog.Content>
       </Dialog.Root>
 
