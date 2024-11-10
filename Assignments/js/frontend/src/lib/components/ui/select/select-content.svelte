@@ -1,16 +1,16 @@
 <script lang="ts">
-	import { Select as SelectPrimitive, type WithoutChild } from "bits-ui";
-	import SelectScrollUpButton from "./select-scroll-up-button.svelte";
-	import SelectScrollDownButton from "./select-scroll-down-button.svelte";
-	import { cn } from "$lib/utils.js";
+import { cn } from "$lib/utils.js";
+import { Select as SelectPrimitive, type WithoutChild } from "bits-ui";
+import SelectScrollDownButton from "./select-scroll-down-button.svelte";
+import SelectScrollUpButton from "./select-scroll-up-button.svelte";
 
-	let {
-		ref = $bindable(null),
-		class: className,
-		sideOffset = 4,
-		children,
-		...restProps
-	}: WithoutChild<SelectPrimitive.ContentProps> = $props();
+let {
+  ref = $bindable(null),
+  class: className,
+  sideOffset = 4,
+  children,
+  ...restProps
+}: WithoutChild<SelectPrimitive.ContentProps> = $props();
 </script>
 
 <SelectPrimitive.Portal>

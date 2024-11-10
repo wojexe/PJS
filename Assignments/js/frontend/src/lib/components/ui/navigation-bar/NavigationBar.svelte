@@ -7,8 +7,8 @@ import { getCurrentUser } from "$lib/data/user.svelte";
 const currentUser = $derived(getCurrentUser());
 const signedIn = $derived(!!currentUser);
 
-import { LogOut, Store } from "lucide-svelte";
 import SignUp from "$lib/components/forms/signUp/SignUp.svelte";
+import { LogOut, Store } from "lucide-svelte";
 import Cart from "./Cart.svelte";
 </script>
 

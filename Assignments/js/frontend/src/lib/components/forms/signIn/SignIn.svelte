@@ -7,7 +7,7 @@ import { User } from "$lib/data/user.svelte";
 
 import { type AxiosError } from "axios";
 
-import { defaults, superForm, setMessage } from "sveltekit-superforms";
+import { defaults, setMessage, superForm } from "sveltekit-superforms";
 import SuperDebug from "sveltekit-superforms";
 import { valibot } from "sveltekit-superforms/adapters";
 

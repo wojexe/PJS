@@ -12,7 +12,12 @@ import { addWeeks } from "date-fns";
 import type { SQLiteError } from "bun:sqlite";
 import { db } from "./db";
 
-const sessionMiddleware = createMiddleware(async (c, next) => {
+const sessionMiddleware = createMiddleware<{
+  Variables: {
+    userSession: string;
+    userID: string;
+  };
+}>(async (c, next) => {
   const userSession = getCookie(c, "user-session");
 
   if (userSession == null) {
@@ -27,14 +32,13 @@ const sessionMiddleware = createMiddleware(async (c, next) => {
     )
     .get(userSession);
 
-
   if (maybeUserID == null) {
     throw new HTTPException(401, {
       res: Response.json({ error: "Invalid session" }),
     });
   }
 
-  const { userID } = maybeUserID;
+  const { userID } = maybeUserID as { userID: string };
 
   db.query(
     `UPDATE sessions SET expires_at=datetime('now', '+7 days') WHERE user_id = ?`,
@@ -154,8 +158,7 @@ app.post(
   },
 );
 
-app.use("logout", sessionMiddleware)
-app.post("logout", (c) => {
+app.post("logout", sessionMiddleware, (c) => {
   const userSession = c.var.userSession;
   db.query("DELETE FROM sessions WHERE session_id = ?").run(userSession);
 
@@ -163,11 +166,12 @@ app.post("logout", (c) => {
   return c.json({ success: true });
 });
 
-app.use("me", sessionMiddleware)
-app.get("me", (c) => {
+app.get("me", sessionMiddleware, (c) => {
   const userID = c.var.userID;
 
-  const maybeEmail = db.query("SELECT email FROM users WHERE id = ?").get(userID);
+  const maybeEmail = db
+    .query("SELECT email FROM users WHERE id = ?")
+    .get(userID);
 
   if (maybeEmail == null) {
     throw new HTTPException(500, {
@@ -175,7 +179,7 @@ app.get("me", (c) => {
     });
   }
 
-  const { email } = maybeEmail;
+  const { email } = maybeEmail as { email: string };
 
   c.status(200);
   return c.json({ success: true, userID, email });

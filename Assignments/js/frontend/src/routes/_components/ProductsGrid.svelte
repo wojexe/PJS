@@ -34,7 +34,7 @@ const user = $derived(getCurrentUser());
         </CardTitle>
         <CardDescription class="flex gap-2 flex-wrap ml-[-0.625rem]">
           {#each product.categories as category}
-            <Badge variant="secondary" class="text-xs">{category}</Badge>
+            <Badge variant="secondary" class="text-xs">{category.name}</Badge>
           {/each}
         </CardDescription>
       </CardHeader>

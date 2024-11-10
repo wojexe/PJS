@@ -1,64 +1,83 @@
 <script lang="ts">
-import ProductsGrid from "./_components/ProductsGrid.svelte";
-import type { PageData, Snapshot } from "./$types";
-import { getCurrentUser, setCurrentUser, User } from "$lib/data/user.svelte";
-import { Cart } from "$lib/data/cart.svelte";
-import type { Product } from "$lib/data/product.svelte";
 import * as Select from "$lib/components/ui/select";
+import { getCurrentUser } from "$lib/data/user.svelte";
+import type { PageData } from "./$types";
+import ProductsGrid from "./_components/ProductsGrid.svelte";
 
 const { data }: { data: PageData } = $props();
-const products = data.products;
+
+const categories = $derived(data.categories);
+const categoriesMap: { [key: string]: string } = $derived(
+  (categories ?? [])?.reduce(
+    // biome-ignore lint/performance/noAccumulatingSpread: temporary
+    (mapping, category) => ({ ...mapping, [category.id]: category.name }),
+    {},
+  ),
+);
+const products = $derived(data.products);
 
 const user = $derived(getCurrentUser());
 
-export const snapshot: Snapshot<Product[] | undefined> = {
-  capture: () => {
-    return $state.snapshot(user?.cart.products);
-  },
-  restore: (products) => {
-    const cart = new Cart(products);
+let selectedCategories: string[] = $state([]);
 
-    if (user?.id != null && user?.email != null)
-      setCurrentUser(new User(user?.id, user?.email, cart));
-  },
-};
+const productsFilteredByCategory = $derived.by(() => {
+  const result = [];
 
-// TODO: use real categories
-let value: string[] | undefined = $state();
-const fruits = [
-  { value: "apple", label: "Apple" },
-  { value: "banana", label: "Banana" },
-  { value: "blueberry", label: "Blueberry" },
-  { value: "grapes", label: "Grapes" },
-  { value: "pineapple", label: "Pineapple" },
-];
+  for (const product of products ?? []) {
+    for (const category of product.categories) {
+      if (selectedCategories.includes(category.id)) {
+        result.push(product);
+        break;
+      }
+    }
+  }
+
+  return result;
+});
 </script>
 
 <svelte:head>
   <title>products @ wojexe's store</title>
 </svelte:head>
 
-<div class="flex justify-center pb-6">
-<Select.Root type="multiple" name="favoriteFruit" bind:value>
-  <Select.Trigger class="flex min-w-96 w-fit justify-end">
-    <div class="flex w-full">{value}</div>
-  </Select.Trigger>
+{#if categories == null}
+  Failed to fetch categories list
+{:else}
+  <div class="flex justify-center pb-6">
+    <Select.Root
+      type="multiple"
+      name="favoriteFruit"
+      bind:value={selectedCategories}
+    >
+      <Select.Trigger class="flex min-w-96 w-fit justify-end">
+        <div class="flex w-full">
+          {selectedCategories.length === 0
+            ? "Category"
+            : selectedCategories
+                .map((x) => categoriesMap?.[x] ?? "error")
+                .join(" or ")}
+        </div>
+      </Select.Trigger>
 
-  <Select.Content>
-    <Select.Group>
-      <Select.GroupHeading>Fruits</Select.GroupHeading>
-      {#each fruits as fruit}
-        <Select.Item value={fruit.value} label={fruit.label}
-          >{fruit.label}</Select.Item
-        >
-      {/each}
-    </Select.Group>
-  </Select.Content>
-</Select.Root>
-</div>
+      <Select.Content>
+        <Select.Group>
+          {#each categories as category}
+            <Select.Item value={category.id} label={category.name}>
+              {category.name}
+            </Select.Item>
+          {/each}
+        </Select.Group>
+      </Select.Content>
+    </Select.Root>
+  </div>
+{/if}
 
 {#if products == null}
   Failed to fetch products list
 {:else}
-  <ProductsGrid {products} />
+  <ProductsGrid
+    products={productsFilteredByCategory.length === 0
+      ? products
+      : productsFilteredByCategory}
+  />
 {/if}

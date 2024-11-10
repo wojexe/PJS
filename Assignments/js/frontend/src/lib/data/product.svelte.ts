@@ -2,7 +2,7 @@ class Product {
   id: string;
   name: string;
   description: string;
-  categories: Array<string>;
+  categories: Array<{ id: string; name: string }>;
   price: number;
   quantity: number;
 
@@ -10,7 +10,7 @@ class Product {
     id: string,
     name: string,
     description: string,
-    categories: Array<string>,
+    categories: Array<{ id: string; name: string }>,
     price: number,
     quantity: number,
   ) {

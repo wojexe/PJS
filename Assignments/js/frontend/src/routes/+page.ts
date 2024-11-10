@@ -1,18 +1,23 @@
-import type { PageLoad } from "./$types";
 import { PUBLIC_API_URL } from "$env/static/public";
+import type { PageLoad } from "./$types";
 
-import axios, { type AxiosError } from "axios";
 import { Product } from "$lib/data/product.svelte";
+import axios, { type AxiosError } from "axios";
 import * as v from "valibot";
 
 // Remove when using fetch
 export const ssr = false;
 
+const categorySchema = v.strictObject({
+  id: v.pipe(v.string(), v.uuid()),
+  name: v.string(),
+});
+
 const productSchema = v.strictObject({
   id: v.pipe(v.string(), v.uuid()),
   name: v.string(),
   description: v.string(),
-  categories: v.array(v.string()),
+  categories: v.array(categorySchema),
   price: v.number(),
   quantity: v.pipe(v.number(), v.integer()),
 });
@@ -25,9 +30,22 @@ export const load: PageLoad = async ({ parent }) => {
   }
 
   let products = undefined;
+  let categories = undefined;
 
   try {
-    // TODO: filtering by category
+    const response = await axios.get(
+      new URL("api/store/categories", PUBLIC_API_URL).toString(),
+      { withCredentials: true },
+    );
+    const parsedCategories = v.parse(v.array(categorySchema), response.data);
+    categories = parsedCategories;
+  } catch (e) {
+    const error = e as AxiosError;
+    console.log(`[+page.ts] axios.get categories failed ${error.message}`);
+    return {};
+  }
+
+  try {
     const response = await axios.get(
       new URL("api/store/products", PUBLIC_API_URL).toString(),
       { withCredentials: true },
@@ -47,9 +65,9 @@ export const load: PageLoad = async ({ parent }) => {
     );
   } catch (e) {
     const error = e as AxiosError;
-    console.log(`[+page.ts] axios.get failed ${error.message}`);
+    console.log(`[+page.ts] axios.get products failed ${error.message}`);
     return {};
   }
 
-  return { products };
+  return { products, categories };
 };
