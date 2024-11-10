@@ -19,7 +19,6 @@ interface Props {
 let { products }: Props = $props();
 
 const user = $derived(getCurrentUser());
-const cart = $derived(user?.cart);
 </script>
 
 <main

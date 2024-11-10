@@ -11,7 +11,7 @@ const { user }: { user: User } = $props();
 const cart = $derived(user.cart);
 </script>
 
-<Dialog.Root open>
+<Dialog.Root>
   <Dialog.Trigger
     class={cn(buttonVariants({ size: "sm", variant: "outline" }))}
   >
