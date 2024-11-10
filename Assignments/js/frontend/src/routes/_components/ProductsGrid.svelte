@@ -13,20 +13,13 @@ import { Product } from "$lib/data/product.svelte";
 import { getCurrentUser } from "$lib/data/user.svelte";
 
 interface Props {
-  products: Array<{
-    id: string;
-    name: string;
-    description: string;
-    categories: Array<string>;
-    price: number;
-    quantity: number;
-  }>;
-  [key: string]: unknown;
+  products: Array<Product>;
 }
 
 let { products }: Props = $props();
 
 const user = $derived(getCurrentUser());
+const cart = $derived(user?.cart);
 </script>
 
 <main
@@ -36,7 +29,10 @@ const user = $derived(getCurrentUser());
   {#each products as product}
     <Card class="flex flex-col">
       <CardHeader>
-        <CardTitle>{product.name}</CardTitle>
+        <CardTitle class="relative w-full">
+          {product.name}
+          <Badge variant="outline" class="absolute right-0">{product.quantity}</Badge>
+        </CardTitle>
         <CardDescription class="flex gap-2 flex-wrap ml-[-0.625rem]">
           {#each product.categories as category}
             <Badge variant="secondary" class="text-xs">{category}</Badge>
@@ -48,11 +44,13 @@ const user = $derived(getCurrentUser());
         <Button
           class="flex w-full"
           onclick={() =>
-            user?.addToCard(
-              new Product(product.id, product.name, product.price)
-            )}
+            user?.addToCart(product)}
+          disabled={!user?.canAddToCart(product)}
         >
-          Add to cart - ${product.price}
+          Add to cart - {Intl.NumberFormat("en-US", {
+            style: "currency",
+            currency: "USD",
+          }).format(product.price)}
         </Button>
       </CardFooter>
     </Card>

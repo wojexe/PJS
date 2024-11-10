@@ -1,7 +1,7 @@
 import { Hono } from "hono";
-import { HTTPException } from "hono/http-exception";
 import { getCookie, setCookie } from "hono/cookie";
 import { createMiddleware } from "hono/factory";
+import { HTTPException } from "hono/http-exception";
 import { auth } from "hono/utils/basic-auth";
 
 import { vValidator } from "@hono/valibot-validator";
@@ -21,23 +21,27 @@ const sessionMiddleware = createMiddleware(async (c, next) => {
     });
   }
 
-  const userID = db
+  const maybeUserID = db
     .query(
-      "SELECT user_id FROM sessions WHERE session_id = ? AND datetime('now') < datetime(expires_at);",
+      "SELECT user_id as userID FROM sessions WHERE session_id = ? AND datetime('now') < datetime(expires_at);",
     )
     .get(userSession);
 
-  if (userID == null) {
+
+  if (maybeUserID == null) {
     throw new HTTPException(401, {
-      res: Response.json({ error: "Unauthorized" }),
+      res: Response.json({ error: "Invalid session" }),
     });
   }
+
+  const { userID } = maybeUserID;
 
   db.query(
     `UPDATE sessions SET expires_at=datetime('now', '+7 days') WHERE user_id = ?`,
   ).run(userID as string);
 
-  c.set('userID', userID)
+  c.set("userSession", userSession);
+  c.set("userID", userID);
 
   await next();
 });
@@ -150,12 +154,31 @@ app.post(
   },
 );
 
+app.use("logout", sessionMiddleware)
+app.post("logout", (c) => {
+  const userSession = c.var.userSession;
+  db.query("DELETE FROM sessions WHERE session_id = ?").run(userSession);
+
+  c.status(200);
+  return c.json({ success: true });
+});
+
+app.use("me", sessionMiddleware)
 app.get("me", (c) => {
   const userID = c.var.userID;
-  const email = db.query("SELECT email FROM users WHERE id = ?").run(userID);
+
+  const maybeEmail = db.query("SELECT email FROM users WHERE id = ?").get(userID);
+
+  if (maybeEmail == null) {
+    throw new HTTPException(500, {
+      res: Response.json({ error: "Invalid state" }),
+    });
+  }
+
+  const { email } = maybeEmail;
 
   c.status(200);
   return c.json({ success: true, userID, email });
-})
+});
 
 export { app as auth, sessionMiddleware };

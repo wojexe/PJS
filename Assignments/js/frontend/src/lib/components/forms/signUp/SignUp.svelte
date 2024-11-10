@@ -22,7 +22,7 @@ const superForm_ = superForm(defaults(valibot(registerSchema)), {
       await User.SignUp(email, password);
     } catch (e) {
       const error = e as AxiosError;
-      setMessage(form, error.message);
+      setMessage(form, (error.response?.data as { error: string }).error);
     }
   },
 });

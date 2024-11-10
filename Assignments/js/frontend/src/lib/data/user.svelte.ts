@@ -8,12 +8,12 @@ import type { Product } from "./product.svelte";
 class User {
   id: string;
   email: string;
-  cart: Cart;
+  cart: Cart = $state(new Cart(undefined));
 
-  constructor(id: string, email: string) {
+  constructor(id: string, email: string, cart?: Cart) {
     this.id = id;
     this.email = email;
-    this.cart = new Cart(null);
+    this.cart = cart ?? new Cart(undefined);
   }
 
   static async SignIn(email: string, password: string) {
@@ -48,7 +48,27 @@ class User {
     }
   }
 
-  static async SignOut() {
+  static async Me() {
+    try {
+      const response = await axios.get<{ userID: string; email: string }>(
+        new URL("auth/me", PUBLIC_API_URL).toString(),
+        { withCredentials: true },
+      );
+
+      if (response.status === 200) {
+        const { userID, email } = response.data;
+        currentUser = new User(userID, email);
+
+        return { id: userID, email };
+      }
+    } catch (e) {}
+
+    console.log("You're a guest!");
+    currentUser = null;
+    return null;
+  }
+
+  async signOut() {
     const response = await axios.post(
       new URL("auth/logout", PUBLIC_API_URL).toString(),
       null,
@@ -65,29 +85,8 @@ class User {
     }
   }
 
-  static async Me() {
-    const response = await axios.get<{ userID: string; email: string }>(
-      new URL("auth/me", PUBLIC_API_URL).toString(),
-      { withCredentials: true },
-    );
-
-    if (response.status === 200) {
-      const { userID, email } = response.data;
-      currentUser = new User(userID, email);
-
-      console.log("You're logged in!");
-
-      return { id: userID, email };
-    }
-
-    console.log("You're a guest!");
-    return null;
-  }
-
-  addToCard(product: Product) {
-    this.cart.add(product);
-    console.log(this.cart.products);
-  }
+  addToCart = (product: Product) => this.cart.add(product);
+  canAddToCart = (product: Product) => this.cart.canAdd(product);
 }
 
 let currentUser = $state.raw<User | null>(null);

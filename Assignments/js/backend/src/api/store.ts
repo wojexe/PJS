@@ -6,19 +6,17 @@ import { db } from "../db";
 
 const app = new Hono();
 
-app.use(sessionMiddleware);
-
 app.get("products", (c) => {
   const categories = c.req.query("categories")?.split(",");
 
   let products: Array<unknown> = [];
-  let query = `
+  const query = `
 SELECT products.*, categories.name as categories
 FROM products
 INNER JOIN products_categories as pc
 	ON pc.product_id = products.id
 INNER JOIN categories
-  ON pc.category_id = categories.id`
+  ON pc.category_id = categories.id`;
 
   if (categories == null) {
     products = db.query(query).all();
@@ -34,18 +32,18 @@ WHERE lower(categories.name) IN ${stringifiedCategories}
   }
 
   // dear god
-  const mapping: any = new Map()
+  const mapping: any = new Map();
   for (const product of products) {
     const current: any = mapping.get(product.id);
     let next: any;
     if (current == null) {
-      product.categories = [product.categories]
-      next = product
+      product.categories = [product.categories];
+      next = product;
     } else {
-      current.categories.push(product.categories)
-      next = current
+      current.categories.push(product.categories);
+      next = current;
     }
-    mapping.set(product.id, next)
+    mapping.set(product.id, next);
   }
 
   return c.json([...mapping.values()]);
@@ -56,7 +54,10 @@ app.get("categories", (c) => {
   return c.json(categories);
 });
 
-app.post("purchase", (_c) => {
+app.use("purchase", sessionMiddleware)
+app.post("purchase", (c) => {
+  const { order } = c.req.valid("json");
+
   throw new HTTPException(501, {
     res: Response.json({ erorr: "Not implemented " }),
   });
