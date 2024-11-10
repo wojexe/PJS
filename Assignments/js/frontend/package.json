@@ -3,9 +3,9 @@
 	"version": "0.0.1",
 	"type": "module",
 	"scripts": {
-		"dev": "vite dev",
-		"build": "vite build",
-		"preview": "vite preview",
+		"dev": "NODE_TLS_REJECT_UNAUTHORIZED=0 bunx --bun vite dev",
+		"build": "bunx --bun vite build",
+		"preview": "bunx --bun vite preview",
 		"check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
 		"check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch",
 		"biome:check": "biome check src"
@@ -16,8 +16,9 @@
 		"@sveltejs/kit": "^2.0.0",
 		"@sveltejs/vite-plugin-svelte": "^4.0.0",
 		"@tailwindcss/aspect-ratio": "^0.4.2",
+		"@types/bun": "^1.1.13",
 		"autoprefixer": "^10.4.20",
-		"bits-ui": "^1.0.0-next.39",
+		"bits-ui": "^1.0.0-next.44",
 		"clsx": "^2.1.1",
 		"formsnap": "^2.0.0-next.1",
 		"svelte": "^5.0.0",

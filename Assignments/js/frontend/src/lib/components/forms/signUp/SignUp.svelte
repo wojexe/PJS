@@ -1,5 +1,5 @@
 <script lang="ts">
-import { schema as loginSchema } from "$lib/components/forms/signIn/schema";
+import { schema as registerSchema } from "$lib/components/forms/signUp/schema";
 import * as Form from "$lib/components/ui/form";
 import { Input } from "$lib/components/ui/input";
 
@@ -11,15 +11,15 @@ import { defaults, superForm, setMessage } from "sveltekit-superforms";
 import SuperDebug from "sveltekit-superforms";
 import { valibot } from "sveltekit-superforms/adapters";
 
-const superForm_ = superForm(defaults(valibot(loginSchema)), {
+const superForm_ = superForm(defaults(valibot(registerSchema)), {
   SPA: true,
-  validators: valibot(loginSchema),
+  validators: valibot(registerSchema),
   async onUpdate({ form }) {
     if (!form.valid) return;
 
     try {
       const { email, password } = form.data;
-      await User.SignIn(email, password);
+      await User.SignUp(email, password);
     } catch (e) {
       const error = e as AxiosError;
       setMessage(form, error.message);
@@ -30,7 +30,7 @@ const superForm_ = superForm(defaults(valibot(loginSchema)), {
 const { form, enhance, message } = superForm_;
 </script>
 
-<form method="POST" action="?signin" use:enhance>
+<form method="POST" action="?signup" use:enhance>
   <Form.Field form={superForm_} name="email">
     <Form.Control>
       {#snippet children({ props })}

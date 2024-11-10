@@ -1,4 +1,5 @@
 import { Hono } from "hono";
+import { HTTPException } from "hono/http-exception";
 import { getCookie, setCookie } from "hono/cookie";
 import { createMiddleware } from "hono/factory";
 import { auth } from "hono/utils/basic-auth";
@@ -15,23 +16,28 @@ const sessionMiddleware = createMiddleware(async (c, next) => {
   const userSession = getCookie(c, "user-session");
 
   if (userSession == null) {
-    c.status(401);
-    return c.json({ error: "Unauthorized" });
+    throw new HTTPException(401, {
+      res: Response.json({ error: "Unauthorized" }),
+    });
   }
-  const userId = db
+
+  const userID = db
     .query(
       "SELECT user_id FROM sessions WHERE session_id = ? AND datetime('now') < datetime(expires_at);",
     )
     .get(userSession);
 
-  if (userId == null) {
-    c.status(401);
-    return c.json({ error: "Unauthorized" });
+  if (userID == null) {
+    throw new HTTPException(401, {
+      res: Response.json({ error: "Unauthorized" }),
+    });
   }
 
   db.query(
     `UPDATE sessions SET expires_at=datetime('now', '+7 days') WHERE user_id = ?`,
-  ).run(userId as string);
+  ).run(userID as string);
+
+  c.set('userID', userID)
 
   await next();
 });
@@ -42,8 +48,9 @@ app.post("login", async (c) => {
   const maybeCredentials = auth(c.req.raw);
 
   if (maybeCredentials === undefined) {
-    c.status(401);
-    return c.json({ error: "Unable to read credentials" });
+    throw new HTTPException(400, {
+      res: Response.json({ error: "Unable to read credentials" }),
+    });
   }
 
   const { username: email, password } = maybeCredentials;
@@ -55,16 +62,18 @@ app.post("login", async (c) => {
     .get(email) as { userID: string; passwordDB: string };
 
   if (maybeDBCredentials === null) {
-    c.status(401);
-    return c.json({ error: "Wrong email or password" });
+    throw new HTTPException(400, {
+      res: Response.json({ error: "Wrong email or password" }),
+    });
   }
 
   const { userID, passwordDB } = maybeDBCredentials;
   const passwordMatch = await Bun.password.verify(password, passwordDB);
 
   if (passwordMatch === false) {
-    c.status(401);
-    return c.json({ error: "Wrong email or password" });
+    throw new HTTPException(400, {
+      res: Response.json({ error: "Wrong email or password" }),
+    });
   }
 
   const sessionID = crypto.randomUUID();
@@ -77,7 +86,7 @@ app.post("login", async (c) => {
   );
 
   c.status(200);
-  return c.json({ success: true });
+  return c.json({ success: true, userID });
 });
 
 app.post(
@@ -86,12 +95,16 @@ app.post(
     "json",
     v.strictObject({
       email: v.pipe(v.string(), v.email(), v.maxLength(256)),
-      password: v.pipe(v.string(), v.maxLength(256)),
+      password: v.pipe(v.string(), v.minLength(8), v.maxLength(256)),
     }),
     (res, c) => {
       if (res.issues != null && res.issues.length >= 0) {
-        c.status(400);
-        return c.json({ issues: res.issues.map((issue) => issue.message) });
+        throw new HTTPException(400, {
+          res: Response.json({
+            error: "Validation error",
+            issues: res.issues.map((issue) => issue.message),
+          }),
+        });
       }
     },
   ),
@@ -113,17 +126,36 @@ app.post(
 
       switch (error.code) {
         case "SQLITE_CONSTRAINT_UNIQUE":
-          c.status(400);
-          return c.json({ error: "Email already taken" });
+          throw new HTTPException(400, {
+            res: Response.json({ error: "Email already taken" }),
+          });
         default:
-          c.status(400);
-          return c.json({ error: "Error creating account" });
+          throw new HTTPException(400, {
+            res: Response.json({ error: "Error creating account" }),
+          });
       }
     }
+
+    const sessionID = crypto.randomUUID();
+
+    setCookie(c, "user-session", sessionID);
+    db.query("INSERT INTO sessions VALUES (?, ?, ?)").run(
+      sessionID,
+      userID,
+      addWeeks(new Date(), 1).toISOString(),
+    );
 
     c.status(201);
     return c.json({ userID });
   },
 );
+
+app.get("me", (c) => {
+  const userID = c.var.userID;
+  const email = db.query("SELECT email FROM users WHERE id = ?").run(userID);
+
+  c.status(200);
+  return c.json({ success: true, userID, email });
+})
 
 export { app as auth, sessionMiddleware };

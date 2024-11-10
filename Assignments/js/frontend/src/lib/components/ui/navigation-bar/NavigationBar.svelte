@@ -2,12 +2,15 @@
 import { SignIn } from "$lib/components/forms/signIn";
 import { Button, buttonVariants } from "$lib/components/ui/button";
 import * as Dialog from "$lib/components/ui/dialog";
-
 import { cn } from "$lib/utils";
 
-import { ShoppingCart, Store } from "lucide-svelte";
+import { getCurrentUser } from "$lib/data/user.svelte";
+const currentUser = $derived(getCurrentUser());
+const signedIn = $derived(!!currentUser);
+const cart = $derived(currentUser?.cart);
 
-const signedIn = false;
+import { ShoppingCart, Store } from "lucide-svelte";
+import SignUp from "$lib/components/forms/signUp/SignUp.svelte";
 </script>
 
 <nav
@@ -34,10 +37,10 @@ const signedIn = false;
   </nav>
 
   <div class="justify-self-end flex gap-4">
-    {#if signedIn === false}
+    {#if !signedIn}
       <Dialog.Root>
-        <Dialog.Trigger>
-          <Button variant="outline" size="sm">Sign in</Button>
+        <Dialog.Trigger class={buttonVariants({ variant: "outline", size: "sm"})}>
+          Sign in
         </Dialog.Trigger>
         <Dialog.Content>
           <Dialog.Header>
@@ -48,25 +51,38 @@ const signedIn = false;
       </Dialog.Root>
 
       <Dialog.Root>
-        <Dialog.Trigger>
-          <Button size="sm">Sign up</Button>
+        <Dialog.Trigger class={buttonVariants({ size: "sm"})}>
+          Sign up
         </Dialog.Trigger>
         <Dialog.Content>
           <Dialog.Header>
             <Dialog.Title>Sign up</Dialog.Title>
           </Dialog.Header>
-          <!-- TODO: Sign up form content -->
+           <SignUp />
         </Dialog.Content>
       </Dialog.Root>
     {:else}
-      <!-- TODO: cart handling -->
-      <a
-        href="cart"
-        class={cn(buttonVariants({ size: "sm", variant: "outline" }))}
-      >
-        <ShoppingCart />
-        <span class="sr-only">Cart</span>
-      </a>
+      <Dialog.Root>
+        <Dialog.Trigger class={cn(buttonVariants({ size: "sm", variant: "outline" }))}>
+          <ShoppingCart />
+          <span class="sr-only">Cart</span>
+        </Dialog.Trigger>
+        <Dialog.Content>
+          <Dialog.Header>
+            <Dialog.Title>Cart</Dialog.Title>
+            <Dialog.Description>Items you wanna buy :D</Dialog.Description>
+          </Dialog.Header>
+           <!-- TODO: make better -->
+          <ul>
+            {#each cart!.products as product}
+              <li>{product.name}, {product.price}</li>
+            {/each}
+          </ul>
+          {#if cart!.products.length > 0}
+            <Button class="relative">Purchase<span class="text-xs italic absolute right-1 bottom-1">(it does nothing)</span></Button>
+          {/if}
+        </Dialog.Content>
+      </Dialog.Root>
     {/if}
   </div>
 </nav>

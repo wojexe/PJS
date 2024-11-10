@@ -9,17 +9,24 @@ import {
   CardHeader,
   CardTitle,
 } from "$lib/components/ui/card";
+import { Product } from "$lib/data/product.svelte";
+import { getCurrentUser } from "$lib/data/user.svelte";
 
 interface Props {
   products: Array<{
+    id: string;
     name: string;
     description: string;
     categories: Array<string>;
+    price: number;
+    quantity: number;
   }>;
   [key: string]: unknown;
 }
 
 let { products }: Props = $props();
+
+const user = $derived(getCurrentUser());
 </script>
 
 <main
@@ -38,8 +45,15 @@ let { products }: Props = $props();
       </CardHeader>
       <CardContent class="h-full">{product.description}</CardContent>
       <CardFooter>
-        <!-- TODO: handle orders -->
-        <Button class="flex w-full">Add to cart</Button>
+        <Button
+          class="flex w-full"
+          onclick={() =>
+            user?.addToCard(
+              new Product(product.id, product.name, product.price)
+            )}
+        >
+          Add to cart - ${product.price}
+        </Button>
       </CardFooter>
     </Card>
   {/each}

@@ -1,6 +1,7 @@
 import { Hono } from "hono";
-import { sessionMiddleware } from "../auth";
+import { HTTPException } from "hono/http-exception";
 
+import { sessionMiddleware } from "../auth";
 import { db } from "../db";
 
 const app = new Hono();
@@ -11,24 +12,43 @@ app.get("products", (c) => {
   const categories = c.req.query("categories")?.split(",");
 
   let products: Array<unknown> = [];
+  let query = `
+SELECT products.*, categories.name as categories
+FROM products
+INNER JOIN products_categories as pc
+	ON pc.product_id = products.id
+INNER JOIN categories
+  ON pc.category_id = categories.id`
+
   if (categories == null) {
-    products = db.query("SELECT * FROM products;").all();
+    products = db.query(query).all();
   } else {
     const stringifiedCategories = `(${categories.map((x) => `"${x.toLowerCase()}"`).join(", ")})`;
 
     products = db
       .query(`
-SELECT products.*, categories.name as category
-FROM products
-INNER JOIN products_categories as pc
-	ON pc.product_id = products.id
-INNER JOIN categories
-  ON pc.category_id = categories.id
-WHERE lower(categories.name) IN ${stringifiedCategories}`)
+${query}
+WHERE lower(categories.name) IN ${stringifiedCategories}
+`)
       .all();
   }
 
-  return c.json(products);
+  // dear god
+  const mapping: any = new Map()
+  for (const product of products) {
+    const current: any = mapping.get(product.id);
+    let next: any;
+    if (current == null) {
+      product.categories = [product.categories]
+      next = product
+    } else {
+      current.categories.push(product.categories)
+      next = current
+    }
+    mapping.set(product.id, next)
+  }
+
+  return c.json([...mapping.values()]);
 });
 
 app.get("categories", (c) => {
@@ -36,9 +56,10 @@ app.get("categories", (c) => {
   return c.json(categories);
 });
 
-app.post("purchase", (c) => {
-  c.status(501);
-  return c.json({ error: "Not implemented" });
+app.post("purchase", (_c) => {
+  throw new HTTPException(501, {
+    res: Response.json({ erorr: "Not implemented " }),
+  });
 });
 
 export default app;
