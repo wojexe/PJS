@@ -8,7 +8,6 @@ import { User } from "$lib/data/user.svelte";
 import { type AxiosError } from "axios";
 
 import { defaults, setMessage, superForm } from "sveltekit-superforms";
-import SuperDebug from "sveltekit-superforms";
 import { valibot } from "sveltekit-superforms/adapters";
 
 const superForm_ = superForm(defaults(valibot(registerSchema)), {
@@ -55,7 +54,3 @@ const { form, enhance, message } = superForm_;
   {/if}
   <Form.Button class="mt-2">Submit</Form.Button>
 </form>
-
-<div class="fixed bottom-0 right-0 w-96 translate-x-full scale-90 origin-bottom-left z-[9999]">
-  <SuperDebug data={$form}/>
-</div>
