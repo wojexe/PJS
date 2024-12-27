@@ -1,0 +1,7 @@
+ruby file: ".tool-versions"
+
+source "https://rubygems.org"
+gem "nokogiri"
+gem "httpx"
+gem "sqlite3"
+gem "standard"
