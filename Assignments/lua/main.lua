@@ -97,7 +97,7 @@ function love.touchreleased(id, x, y)
     return
   end
 
-  -- No swipe detected (must be tap or hold)
+  -- No swipe detected (must be a tap or hold)
   if touchDuration < holdThreshhold then
     table.insert(debug, 4, "tap")
     game:handleTouch('tap')

@@ -125,6 +125,11 @@ function Constants:initializeMobileSettings(w, h)
 
   self.GAME_PADDING_X = (w - self.CELL_SIZE * self.GRID_X_CELLS) / 2
   self.GAME_PADDING_Y = (h - self.CELL_SIZE * self.GRID_Y_CELLS) / 2
+
+
+  Constants.TEXT = {
+    GAME_OVER = "Game Over!\nTap to restart",
+  }
 end
 
 return Constants
