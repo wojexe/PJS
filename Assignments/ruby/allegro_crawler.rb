@@ -44,12 +44,16 @@ class AllegroCrawler
   def crawl_laptops
     @crawled_products = []
 
+    category_id = save_category("laptops")
+
     (1..PAGES_TO_CRAWL).each do |i|
       response = fetch(laptops: true, page: i)
       page = Nokogiri::HTML(response)
       products = crawl_page(page)
 
-      @crawled_products = products
+      products.each do |product|
+        save_product_category(category_id, product.id) if product.id
+      end
 
       sleep(5)
     end
@@ -58,10 +62,16 @@ class AllegroCrawler
   def crawl_search(s)
     @crawled_products = []
 
+    search_term_id = save_search_term(s)
+
     response = fetch(search: s)
 
     page = Nokogiri::HTML(response)
     products = crawl_page(page)
+
+    products.each do |product|
+      save_search_result(search_term_id, product.id) if product.id
+    end
 
     @crawled_products = products
   end
@@ -74,17 +84,26 @@ class AllegroCrawler
     links = titles.css("a").map { |e| e["href"] }
 
     titles.zip(prices, links)
-      .first(1)
       .map do |title, price, link|
       description = crawl_listing(link)
       sleep(5)
 
-      AllegroProduct.create(
+      product = AllegroProduct.new(
         title: title&.text,
         description: description,
-        price: price&.text,
-        link: link
+        price: price&.text&.gsub(/[^\d,]/, "")&.tr(",", ".")&.to_f, # Convert price string to decimal
+        link: link,
+        created_at: Time.now
       )
+
+      if product.valid?
+        product.save
+        @crawled_products << product
+      else
+        puts "Invalid product: #{product.errors.full_messages}"
+      end
+
+      product
     end
   end
 
@@ -161,5 +180,33 @@ class AllegroCrawler
     uri.query_values = params unless params.empty?
 
     uri
+  end
+
+  def save_search_term(term)
+    @db[:search_terms].insert(
+      term: term,
+      created_at: Time.now
+    )
+  end
+
+  def save_search_result(search_term_id, product_id)
+    @db[:search_results].insert(
+      search_id: search_term_id,
+      product_id: product_id
+    )
+  end
+
+  def save_category(name)
+    @db[:category].insert(
+      name: name,
+      created_at: Time.now
+    )
+  end
+
+  def save_product_category(category_id, product_id)
+    @db[:categories_products].insert(
+      category_id: category_id,
+      product_id: product_id
+    )
   end
 end
