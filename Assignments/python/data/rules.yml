@@ -1,0 +1,44 @@
+version: "3.1"
+
+rules:
+  - rule: Respond to user's greeting
+    steps:
+      - intent: greet
+      - action: utter_greet
+
+  - rule: Say goodbye anytime the user says goodbye
+    steps:
+      - intent: goodbye
+      - action: utter_goodbye
+
+  - rule: Say 'I am a bot' anytime the user challenges
+    steps:
+      - intent: bot_challenge
+      - action: utter_iamabot
+
+  - rule: Respond to user's request for opening hours
+    steps:
+      - intent: check_hours
+      - action: action_check_hours
+
+  - rule: Respond to user's request to show menu items
+    steps:
+      - intent: show_menu
+      - action: action_show_menu
+
+  - rule: Choose delivery
+    steps:
+    - action: utter_ask_delivery_or_pickup
+    - intent: choose_delivery
+    - action: utter_ask_address
+
+  - rule: Provide address
+    steps:
+    - intent: provide_address
+    - action: action_choose_delivery
+
+  - rule: Choose pickup
+    steps:
+      - action: utter_ask_delivery_or_pickup
+      - intent: choose_pickup
+      - action: action_choose_pickup

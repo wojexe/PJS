@@ -1,0 +1,34 @@
+version: "3.1"
+
+stories:
+  - story: order with pickup
+    steps:
+      - intent: place_order
+        entities:
+          - provided_dish: "lasagne"
+      - slot_was_set:
+          - dish: "lasagne"
+      - action: action_place_order
+      - action: utter_ask_delivery_or_pickup
+      - intent: choose_pickup
+      - action: action_choose_pickup
+      - intent: goodbye
+      - action: utter_goodbye
+
+  - story: list menu and order with delivery
+    steps:
+      - intent: show_menu
+      - action: action_show_menu
+      - intent: place_order
+        entities:
+          - provided_dish: "Pizza"
+      - slot_was_set:
+          - dish: "Pizza"
+      - action: action_place_order
+      - action: utter_ask_delivery_or_pickup
+      - intent: choose_delivery
+      - action: utter_ask_address
+      - intent: provide_address
+      - action: action_choose_delivery
+      - intent: goodbye
+      - action: utter_goodbye
