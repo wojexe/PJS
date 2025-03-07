@@ -1,0 +1,19 @@
+{
+	"name": "backend",
+	"scripts": {
+		"dev": "bun run --hot src/index.ts",
+		"check": "bun run biome check src",
+		"check:write": "bun run biome check src --write"
+	},
+	"dependencies": {
+		"@faker-js/faker": "^9.1.0",
+		"@hono/valibot-validator": "^0.4.1",
+		"date-fns": "^4.1.0",
+		"hono": "^4.6.8",
+		"valibot": "^0.42.1"
+	},
+	"devDependencies": {
+		"@biomejs/biome": "^1.9.4",
+		"@types/bun": "latest"
+	}
+}
