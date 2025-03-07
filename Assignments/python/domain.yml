@@ -1,0 +1,81 @@
+version: "3.1"
+
+intents:
+  - greet
+  - goodbye
+  - affirm
+  - deny
+  - bot_challenge
+
+  - check_hours
+  - show_menu
+  - place_order
+  - provide_address
+  - choose_pickup
+  - choose_delivery
+
+entities:
+  - day
+  - hour
+  - provided_dish
+  - address
+
+slots:
+  day:
+    type: text
+    mappings:
+      - type: from_entity
+        entity: day
+        intent: check_hours
+  hour:
+    type: text
+    mappings:
+      - type: from_entity
+        entity: hour
+        intent: check_hours
+
+  dish:
+    type: text
+    influence_conversation: true
+    mappings:
+      - type: from_entity
+        entity: provided_dish
+        intent: place_order
+
+  address:
+    type: text
+    influence_conversation: true
+    mappings:
+      - type: from_entity
+        entity: address
+        intent: provide_address
+
+responses:
+  utter_greet:
+    - text: "Hello! How can I help you today?"
+
+  utter_goodbye:
+    - text: "Goodbye! Have a great day!"
+
+  utter_ask_delivery_or_pickup:
+    - text: "Would you like the order to be delivered or will you pick it up yourself?"
+
+  utter_ask_address:
+    - text: "Please provide your delivery address."
+
+  utter_confirm_address:
+    - text: "Your order will be delivered to {address}."
+
+  utter_iamabot:
+    - text: "I am a bot, powered by Rasa."
+
+actions:
+  - action_check_hours
+  - action_show_menu
+  - action_place_order
+  - action_choose_pickup # !!!
+  - action_choose_delivery # !!!
+
+session_config:
+  session_expiration_time: 60
+  carry_over_slots_to_new_session: true

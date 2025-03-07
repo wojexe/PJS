@@ -1,0 +1,129 @@
+version: "3.1"
+
+nlu:
+  - intent: greet
+    examples: |
+      - hey
+      - hello
+      - hi
+      - hello there
+      - good morning
+      - good evening
+      - hey there
+      - let's go
+      - hey dude
+      - goodmorning
+      - goodevening
+      - good afternoon
+
+  - intent: goodbye
+    examples: |
+      - cu
+      - good by
+      - cee you later
+      - good night
+      - bye
+      - goodbye
+      - have a nice day
+      - see you around
+      - bye bye
+      - see you later
+
+  - intent: affirm
+    examples: |
+      - yes
+      - y
+      - indeed
+      - of course
+      - that sounds good
+      - correct
+
+  - intent: deny
+    examples: |
+      - no
+      - n
+      - nope
+      - never
+      - I don't think so
+      - don't like that
+      - no way
+      - not really
+      - norway
+
+  - intent: bot_challenge
+    examples: |
+      - are you a bot?
+      - are you a human?
+      - am I talking to a bot?
+      - am I talking to a human?
+
+  - intent: check_hours
+    examples: |
+      - Are you open today?
+      - What are your opening hours?
+      - When do you close?
+      - Are you open on [Monday](day)?
+      - What time do you close on [Friday](day)?
+      - hours
+      - time open
+      - R u opn today?
+      - Wen do u close?
+      - Operating hours?
+      - Are you open now?
+      - Are you open on [Sunday](day) at 2PM(hour)?
+      - Are you open on [Sunday](day) at 14:00(hour)?
+
+  - intent: show_menu
+    examples: |
+      - What's on the menu?
+      - Can I see the menu?
+      - What do you serve?
+      - Show me the menu
+      - What food do you have?
+      - menu pls
+      - wat food u got
+      - Food options?
+      - menu
+
+  - intent: place_order
+    examples: |
+      - I want to order [pizza](provided_dish)
+      - Can I get a [burger](provided_dish)
+      - I'd like to order [lasagne](provided_dish)
+      - Give me [spaghetti carbonara](provided_dish)
+      - Can I order [tiramisu](provided_dish)
+      - Order [hotdog](provided_dish)
+      - order [fries](provided_dish)
+      - gimme [burger](provided_dish)
+      - [tiramisu](provided_dish) pls
+
+  - intent: choose_delivery
+    examples: |
+      - I want it delivered
+      - Delivery pls
+      - Can you deliver it to my location
+      - delivery
+      - deliver it to me
+      - bring it to me
+
+  - intent: choose_pickup
+    examples: |
+      - I want to pick it up
+      - I want to pick it up myself
+      - peak it upp
+      - Can I pick it up?
+      - I'll get it myself
+      - i'll handle the pickup
+      - pickup
+
+  - intent: provide_address
+    examples: |
+      - My address is [123 Main Street](address)
+      - I live at [456 Elm Street](address)
+      - Deliver to [Kopernika 21/8](address)
+      - Send it to [101 Pine Road](address)
+      - The address is [ul. Grodzka 88](address)
+      - [303 Cedar Boulevard](address)
+      - [ul. Wąska 42/1A](address)
+      - [505 Walnut Street](address)
+      - [Wilczyńskiego 11/2](address)
