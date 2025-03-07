@@ -1,0 +1,14 @@
+ruby file: ".tool-versions"
+
+source "https://rubygems.org"
+
+gem "nokogiri", "~> 1.18"
+gem "httpx", "~> 1.4"
+gem "addressable", "~> 2.7"
+gem "sqlite3", "~> 2.5"
+gem "sequel", "~> 5.87"
+
+gem "standard", "~> 1.43"
+gem "awesome_print", "~> 1.9"
+
+gem "pry", "~> 0.15.0"
